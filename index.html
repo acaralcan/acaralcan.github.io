@@ -1,5 +1,93 @@
-acaralcan.github.io/
-├── index.html
-├── kor-bahceleri.html
-├── ucak-oyunu/
-└── yugioh/
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>acaralcan.github.io</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: white;
+      font-family: Arial;
+      padding: 25px;
+      text-align: center;
+    }
+    h1 {
+      color: #00ff88;
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+    .alt-baslik {
+      color: #9ca3af;
+      font-size: 16px;
+      margin-bottom: 25px;
+    }
+    img {
+      border-radius: 15px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    .buton {
+      display: inline-block;
+      background-color: #00ff88;
+      color: #1a1a1a;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin: 10px;
+      min-width: 200px;
+    }
+    .buton:hover {
+      background-color: white;
+    }
+    .buton-siir {
+      background-color: #8b5cf6;
+      color: white;
+    }
+    .buton-siir:hover {
+      background-color: #7c3aed;
+    }
+    .menu {
+      margin-top: 30px;
+    }
+    #sayac {
+      color:#00ff88; 
+      font-size:20px; 
+      font-weight:bold;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>acaralcan.github.io</h1>
+  <p class="alt-baslik">Acar Alcan | Projeler & Deneyler</p>
+  
+  <p><img src="https://picsum.photos/300/200" alt="Rastgele Fotoğraf"></p>
+  
+  <p id="sayac">15 Aralık Yükleniyor...</p>
+
+  <div class="menu">
+    <a href="/ucak-oyunu/" class="buton">Uçak Oyunu</a>
+    <a href="/yugioh/" class="buton">Yu-Gi-Oh Oyunu</a>
+    <a href="/kor-bahceleri.html" class="buton buton-siir">Kor Bahçeleri</a>
+  </div>
+
+<script>
+  // 15 Aralık Geri Sayım
+  function geriSayim() {
+    const hedefTarih = new Date('2026-12-15T09:00:00');
+    const simdi = new Date();
+    const fark = hedefTarih - simdi;
+    const gun = Math.floor(fark / (1000 * 60 * 60 * 24));
+    
+    if (gun > 0) {
+      document.getElementById('sayac').innerText = `15 Aralık’a ${gun} gün kaldı 🔥`;
+    } else {
+      document.getElementById('sayac').innerText = `BUGÜN MÜLAKAT GÜNÜ KRAL 👑`;
+    }
+  }
+  geriSayim();
+</script>
+</body>
+</html>
