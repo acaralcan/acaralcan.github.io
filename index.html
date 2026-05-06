@@ -26,29 +26,44 @@
       margin-top: 10px;
       margin-bottom: 20px;
     }
+    .menu {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
     .buton {
       display: inline-block;
       background-color: #00ff88;
       color: #1a1a1a;
-      padding: 12px 24px;
+      padding: 14px 28px;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: bold;
-      margin: 10px;
-      min-width: 200px;
+      min-width: 180px;
+      transition: all 0.3s;
     }
     .buton:hover {
       background-color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,255,136,0.4);
+    }
+    .buton-duel {
+      background-color: #fc0;
+      color: #000;
+    }
+    .buton-duel:hover {
+      background-color: #ffd700;
+      box-shadow: 0 5px 15px rgba(255,204,0,0.4);
     }
     .buton-siir {
       background-color: #8b5cf6;
       color: white;
     }
     .buton-siir:hover {
-      background-color: #7c3aed;
-    }
-    .menu {
-      margin-top: 30px;
+      background-color: #a78bfa;
+      box-shadow: 0 5px 15px rgba(139,92,246,0.4);
     }
     #sayac {
       color:#00ff88; 
@@ -68,26 +83,4 @@
   <p id="sayac">15 Aralık Yükleniyor...</p>
 
   <div class="menu">
-    <a href="/ucak-oyunu/" class="buton">Uçak Oyunu</a>
-    <a href="/yugioh/" class="buton">Yu-Gi-Oh Oyunu</a>
-    <a href="/kor-bahceleri.html" class="buton buton-siir">Kor Bahçeleri</a>
-  </div>
-
-<script>
-  // 15 Aralık Geri Sayım
-  function geriSayim() {
-    const hedefTarih = new Date('2026-12-15T09:00:00');
-    const simdi = new Date();
-    const fark = hedefTarih - simdi;
-    const gun = Math.floor(fark / (1000 * 60 * 60 * 24));
-    
-    if (gun > 0) {
-      document.getElementById('sayac').innerText = `15 Aralık’a ${gun} gün kaldı 🔥`;
-    } else {
-      document.getElementById('sayac').innerText = `BUGÜN MÜLAKAT GÜNÜ KRAL 👑`;
-    }
-  }
-  geriSayim();
-</script>
-</body>
-</html>
+    <a href="/ucak-oyunu/" class="buton">Uçak
