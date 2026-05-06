@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>acaralcan.github.io</title>
   <style>
     body {
@@ -25,29 +26,31 @@
       border-radius: 15px;
       margin-top: 10px;
       margin-bottom: 20px;
+      max-width: 300px;
+      width: 90%;
     }
     .menu {
       margin-top: 30px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       gap: 15px;
     }
     .buton {
-      display: inline-block;
+      display: block;
       background-color: #00ff88;
       color: #1a1a1a;
-      padding: 14px 28px;
+      padding: 16px 28px;
       text-decoration: none;
       border-radius: 10px;
       font-weight: bold;
-      min-width: 180px;
+      width: 85%;
+      max-width: 280px;
       transition: all 0.3s;
     }
     .buton:hover {
       background-color: white;
       transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0,255,136,0.4);
     }
     .buton-duel {
       background-color: #fc0;
@@ -55,7 +58,6 @@
     }
     .buton-duel:hover {
       background-color: #ffd700;
-      box-shadow: 0 5px 15px rgba(255,204,0,0.4);
     }
     .buton-siir {
       background-color: #8b5cf6;
@@ -63,7 +65,6 @@
     }
     .buton-siir:hover {
       background-color: #a78bfa;
-      box-shadow: 0 5px 15px rgba(139,92,246,0.4);
     }
     #sayac {
       color:#00ff88; 
@@ -83,4 +84,25 @@
   <p id="sayac">15 Aralık Yükleniyor...</p>
 
   <div class="menu">
-    <a href="/ucak-oyunu/" class="buton">Uçak
+    <a href="/ucak-oyunu/" class="buton">Uçak Oyunu</a>
+    <a href="/yugioh/" class="buton buton-duel">Duel Master</a>
+    <a href="/kor-bahceleri.html" class="buton buton-siir">Kor Bahçeleri</a>
+  </div>
+
+<script>
+  function geriSayim() {
+    const hedefTarih = new Date('2026-12-15T09:00:00');
+    const simdi = new Date();
+    const fark = hedefTarih - simdi;
+    const gun = Math.floor(fark / (1000 * 60 * 60 * 24));
+    
+    if (gun > 0) {
+      document.getElementById('sayac').innerText = `15 Aralık’a ${gun} gün kaldı 🔥`;
+    } else {
+      document.getElementById('sayac').innerText = `BUGÜN MÜLAKAT GÜNÜ KRAL 👑`;
+    }
+  }
+  geriSayim();
+</script>
+</body>
+</html>
