@@ -3,49 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Neon Striker Pro V6.2 - Clean</title>
+<title>Neon Striker - Hata Affetmez</title>
 <style>
 body { margin:0; background:#000; overflow:hidden; color:#fff; font-family:Arial,sans-serif; touch-action:none; }
 canvas { display:block; }
 #ui { position:absolute; top:10px; left:10px; pointer-events:none; z-index:10; }
 .stat { font-size:16px; color:#00f0ff; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px; text-shadow:0 0 10px #00f0ff; }
-#overlay { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+#overlay, #startOverlay { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
     background:rgba(0,0,0,0.95); z-index:20; }
+#startOverlay { display:flex; }
 button { padding:15px 30px; font-size:18px; background:#00f0ff; border:none; border-radius:5px;
     font-weight:bold; cursor:pointer; color:#000; box-shadow:0 0 20px #00f0ff; margin:5px; }
+button.active { background:#ff0055; color:#fff; box-shadow:0 0 20px #ff0055; }
 #combo-ui { color:#ff00ff; font-weight:bold; font-size:24px; display:none; text-shadow:0 0 15px #ff00ff; }
 #bossHp { position:absolute; top:10px; left:50%; transform:translateX(-50%); width:300px; height:20px;
     background:#333; border:2px solid #ff0055; display:none; z-index:10; }
 #bossHpFill { height:100%; background:linear-gradient(90deg, #ff0055, #ff8800); width:100%; transition:width 0.3s; }
 #bossName { position:absolute; top:35px; left:50%; transform:translateX(-50%); color:#ff0055;
     font-weight:bold; display:none; z-index:10; text-shadow:0 0 10px #ff0055; }
-#pauseBtn { position:absolute; top:10px; right:10px; z-index:15; background:rgba(255,0,85,0.3);
-    border:2px solid #ff0055; color:#fff; width:50px; height:50px; border-radius:50%; pointer-events:auto; font-size:20px; }
+#pauseBtn { position:absolute; top:10px; right:10px; z-index:15; background:transparent;
+    border:none; color:#fff; font-size:28px; pointer-events:auto; }
 #weaponUI { position:absolute; bottom:100px; left:50%; transform:translateX(-50%); display:none; z-index:10; }
+#shieldTimer { color:#00ff00; display:none; }
+#pauseOverlay { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.9); z-index:19; }
+.menuRow { display:flex; gap:10px; margin:10px 0; flex-wrap:wrap; justify-content:center; }
+.shipBtn { width:60px; height:60px; padding:5px; }
 </style>
 </head>
 <body>
 <div id="ui">
     <div class="stat">SKOR: <span id="score">0</span></div>
-    <div class="stat">CAN: <span id="lives">3</span></div>
+    <div class="stat">CAN: <span id="lives">1</span></div>
     <div class="stat">REKOR: <span id="high">0</span></div>
     <div class="stat" style="color:#ff0055;" id="weaponText">PENTA: 5X</div>
     <div id="combo-ui" class="stat">KOMBO x<span id="comboNum">1</span>!</div>
-    <div class="stat" style="color:#00ff00;">KALKAN: <span id="shield">0</span></div>
+    <div class="stat" id="shieldTimer">KALKAN: <span id="shieldTime">1.5</span>s</div>
     <div class="stat" style="color:#ffff00;">COIN: <span id="coins">0</span></div>
 </div>
 <div id="bossHp"><div id="bossHpFill"></div></div>
 <div id="bossName">NEON DESTROYER</div>
 <button id="pauseBtn" onclick="togglePause()">⏸️</button>
 <div id="weaponUI" class="stat" style="color:#ff8800;">MEGA PENTA AKTİF!</div>
+
+<div id="startOverlay">
+    <h1 style="color:#ff0055; font-size:40px; text-shadow:0 0 20px #ff0055;">HATA AFFETMEZ</h1>
+    <p style="font-size:18px;">REKOR: <span id="menuHigh">0</span></p>
+    <h3 style="color:#00f0ff; margin:15px 0 5px 0;">UÇAK SEÇ</h3>
+    <div class="menuRow">
+        <button class="shipBtn active" onclick="selectShip(0, '#00f0ff')" id="ship0">▲</button>
+        <button class="shipBtn" onclick="selectShip(1, '#ff00ff')" id="ship1">◆</button>
+        <button class="shipBtn" onclick="selectShip(2, '#ffff00')" id="ship2">◀</button>
+        <button class="shipBtn" onclick="selectShip(3, '#00ff00')" id="ship3">▼</button>
+    </div>
+    <h3 style="color:#00f0ff; margin:15px 0 5px 0;">MERMİ SAYISI</h3>
+    <div class="menuRow">
+        <button onclick="selectBullets(1)" id="bullet1">TEKLİ</button>
+        <button onclick="selectBullets(2)" id="bullet2">ÇİFT</button>
+        <button onclick="selectBullets(3)" id="bullet3">3'LÜ</button>
+        <button onclick="selectBullets(4)" id="bullet4">4'LÜ</button>
+        <button onclick="selectBullets(5)" id="bullet5" class="active">5'Lİ</button>
+    </div>
+    <button onclick="startGame()" style="margin-top:20px;">OYUNA BAŞLA</button>
+</div>
+
+<div id="pauseOverlay">
+    <h1 style="color:#00f0ff; font-size:40px; text-shadow:0 0 20px #00f0ff;">DURAKLATILDI</h1>
+    <p style="font-size:20px;">SKOR: <span id="pauseScore">0</span></p>
+    <p style="font-size:20px;">REKOR: <span id="pauseHigh">0</span></p>
+    <p style="font-size:18px; color:#ffff00;">COIN: <span id="pauseCoins">0</span></p>
+    <button onclick="togglePause()">DEVAM ET</button>
+    <button onclick="backToMenu()">ANA MENÜ</button>
+</div>
+
 <div id="overlay">
-    <h1 style="color:#ff0055; font-size:40px; text-shadow:0 0 20px #ff0055;">OYUN BİTTİ</h1>
+    <h1 style="color:#ff0055; font-size:40px; text-shadow:0 0 20px #ff0055;">HATA AFFETMEZ</h1>
     <p id="finalScore" style="font-size:20px;"></p>
     <p id="finalCombo" style="font-size:18px; color:#ff00ff;"></p>
     <p id="finalCoins" style="font-size:18px; color:#ffff00;"></p>
-    <button onclick="resetGame()">TEKRAR BAŞLA</button>
+    <button onclick="resetGame()">TEKRAR DENE</button>
     <button onclick="shareScore()">SKORU PAYLAŞ</button>
     <button onclick="watchAd()">REKLAM İZLE +1 CAN</button>
+    <button onclick="backToMenu()">ANA MENÜ</button>
 </div>
 <canvas id="gameCanvas"></canvas>
 
@@ -55,9 +94,12 @@ const ctx = canvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const livesEl = document.getElementById('lives');
 const highEl = document.getElementById('high');
-const shieldEl = document.getElementById('shield');
+const shieldTimer = document.getElementById('shieldTimer');
+const shieldTime = document.getElementById('shieldTime');
 const coinsEl = document.getElementById('coins');
 const overlay = document.getElementById('overlay');
+const pauseOverlay = document.getElementById('pauseOverlay');
+const startOverlay = document.getElementById('startOverlay');
 const comboUi = document.getElementById('combo-ui');
 const comboNum = document.getElementById('comboNum');
 const bossHpBar = document.getElementById('bossHp');
@@ -65,13 +107,24 @@ const bossHpFill = document.getElementById('bossHpFill');
 const bossName = document.getElementById('bossName');
 const weaponText = document.getElementById('weaponText');
 const weaponUI = document.getElementById('weaponUI');
+const pauseScore = document.getElementById('pauseScore');
+const pauseHigh = document.getElementById('pauseHigh');
+const pauseCoins = document.getElementById('pauseCoins');
+const menuHigh = document.getElementById('menuHigh');
 
 let width, height, player, obstacles, bullets, particles, powerups, stars, enemyBullets;
 let score, lives, isGameOver, frameCount, gameSpeed, animationId, boss;
-let highScore = localStorage.getItem('neonV6') || 0;
-let coins = parseInt(localStorage.getItem('neonCoins') || 0);
-let shake = 0, combo = 0, maxCombo = 0, shield = 0, bossActive = false, paused = false;
+let highScore = localStorage.getItem('neonV7') || 0;
+let coins = 0;
+let shake = 0, combo = 0, maxCombo = 0, shieldTimeMs = 0, bossActive = false, paused = false;
 let weaponLevel = 0, slowMo = 0;
+let fakeScore = false, realScore = 0;
+
+let selectedShipType = 0;
+let selectedShipColor = '#00f0ff';
+let selectedBulletCount = 5;
+let FIRE_RATE = 5;
+let BULLET_SPREAD = 18;
 
 let audioCtx;
 function playSound(freq, duration, type='sine', vol=0.1) {
@@ -87,42 +140,60 @@ function playSound(freq, duration, type='sine', vol=0.1) {
     } catch(e) {}
 }
 
-let FIRE_RATE = 5, BULLET_COUNT = 5, BULLET_SPREAD = 18;
+function selectShip(type, color) {
+    selectedShipType = type;
+    selectedShipColor = color;
+    document.querySelectorAll('.shipBtn').forEach(b => b.classList.remove('active'));
+    document.getElementById('ship'+type).classList.add('active');
+}
+
+function selectBullets(count) {
+    selectedBulletCount = count;
+    document.querySelectorAll('[id^=bullet]').forEach(b => b.classList.remove('active'));
+    document.getElementById('bullet'+count).classList.add('active');
+}
+
+function startGame() {
+    startOverlay.style.display = 'none';
+    init();
+}
+
+function backToMenu() {
+    if (animationId) cancelAnimationFrame(animationId);
+    overlay.style.display = 'none';
+    pauseOverlay.style.display = 'none';
+    startOverlay.style.display = 'flex';
+    menuHigh.textContent = highScore;
+}
 
 function init() {
     if (animationId) cancelAnimationFrame(animationId);
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
-    score = 0; lives = 3; isGameOver = false; paused = false;
+    score = 0; lives = 1; isGameOver = false; paused = false;
+    coins = 0;
     obstacles = []; bullets = []; particles = []; powerups = []; enemyBullets = [];
-    frameCount = 0; gameSpeed = 4; combo = 0; maxCombo = 0; shield = 0; bossActive = false;
-    weaponLevel = 0; slowMo = 0;
+    frameCount = 0; gameSpeed = 4; combo = 0; maxCombo = 0; shieldTimeMs = 0; bossActive = false;
+    weaponLevel = 0; slowMo = 0; fakeScore = false;
 
     stars = [];
     for(let i=0; i<150; i++) {
         stars.push({x: Math.random()*width, y: Math.random()*height, size: Math.random()*2, speed: Math.random()*3+1});
     }
 
-    player = {x: width/2, y: height-80, size:40, height:50, targetX: width/2, color: '#00f0ff', invincible: 0};
+    player = {x: width/2, y: height-60, size:100, height:40, targetX: width/2, color: selectedShipColor, invincible: 0, type: selectedShipType};
 
     scoreEl.textContent = score; livesEl.textContent = lives;
-    highEl.textContent = highScore; shieldEl.textContent = shield; coinsEl.textContent = coins;
-    overlay.style.display = 'none'; bossHpBar.style.display = 'none'; bossName.style.display = 'none';
+    highEl.textContent = highScore; shieldTimer.style.display = 'none'; coinsEl.textContent = coins;
+    overlay.style.display = 'none'; pauseOverlay.style.display = 'none';
+    bossHpBar.style.display = 'none'; bossName.style.display = 'none';
     updateWeaponUI();
     animate();
 }
 
 function updateWeaponUI() {
-    if(weaponLevel >= 2) {
-        weaponText.textContent = 'MEGA: 7X'; weaponText.style.color = '#ff8800';
-        BULLET_COUNT = 7; BULLET_SPREAD = 15;
-    } else if(weaponLevel >= 1) {
-        weaponText.textContent = 'HEXA: 6X'; weaponText.style.color = '#ffff00';
-        BULLET_COUNT = 6; BULLET_SPREAD = 16;
-    } else {
-        weaponText.textContent = 'PENTA: 5X'; weaponText.style.color = '#ff0055';
-        BULLET_COUNT = 5; BULLET_SPREAD = 18;
-    }
+    weaponText.textContent = selectedBulletCount + 'X';
+    weaponText.style.color = '#ff0055';
 }
 
 const updatePos = (e) => {
@@ -133,28 +204,46 @@ const updatePos = (e) => {
 window.addEventListener('mousemove', updatePos);
 window.addEventListener('touchmove', (e) => { e.preventDefault(); updatePos(e); }, { passive: false });
 
+window.addEventListener('keydown', (e) => {
+    if(e.key === 'f' || e.key === 'F') {
+        if(!fakeScore) {
+            realScore = score;
+            score = 173644;
+            scoreEl.textContent = score.toLocaleString('tr-TR');
+            fakeScore = true;
+        } else {
+            score = realScore;
+            scoreEl.textContent = score;
+            fakeScore = false;
+        }
+    }
+});
+
 function spawnObstacle() {
     if(bossActive) return;
     const size = Math.random() * 40 + 30;
     const rand = Math.random();
     let type = 'normal', hp = 1, color = `hsl(${Math.random() * 360}, 80%, 60%)`;
     if(rand > 0.97) { type = 'weapon'; hp = 2; color = '#ff8800'; }
-    else if(rand > 0.93) { type = 'coin'; hp = 1; color = '#ffff00'; }
-    else if(rand > 0.88) { type = 'shield'; hp = 2; color = '#00ff00'; }
+    else if(rand > 0.92) { type = 'coin'; hp = 1; color = '#ffff00'; }
+    else if(rand > 0.97) { type = 'shield'; hp = 2; color = '#00ff00'; }
     else if(rand > 0.80) { hp = 3; color = '#ffffff'; }
-
     obstacles.push({x: Math.random()*(width-size), y: -size, size: size, speed: gameSpeed+Math.random()*2, color, hp, type, maxHp: hp});
 }
 
 function spawnBoss() {
     bossActive = true;
     const bossTypes = [
-        {name: 'NEON DESTROYER', hp: 150, color: '#ff0055', speed: 2},
-        {name: 'VOID REAPER', hp: 250, color: '#8800ff', speed: 3},
-        {name: 'OMEGA CORE', hp: 400, color: '#ff8800', speed: 1.5}
+        {name: 'NEON DESTROYER', hp: 120, color: '#ff0055', speed: 1, bulletCount: 1, fireCD: 90},
+        {name: 'VOID REAPER', hp: 200, color: '#8800ff', speed: 1.2, bulletCount: 2, fireCD: 80},
+        {name: 'OMEGA CORE', hp: 350, color: '#ff8800', speed: 0.8, bulletCount: 3, fireCD: 75}
     ];
-    const b = bossTypes[Math.min(Math.floor(score/3000), 2)];
-    boss = {x: width/2, y: 120, size: 140, hp: b.hp, maxHp: b.hp, color: b.color, speed: b.speed, dir: 1, fireRate: 0, name: b.name};
+    let idx = 0;
+    if(score >= 8000) idx = 2;
+    else if(score >= 4000) idx = 1;
+    else idx = 0;
+    const b = bossTypes[idx];
+    boss = {x: width/2, y: 120, size: 140, hp: b.hp, maxHp: b.hp, color: b.color, speed: b.speed, dir: 1, fireRate: 0, name: b.name, bulletCount: b.bulletCount, fireCD: b.fireCD};
     bossHpBar.style.display = 'block'; bossName.style.display = 'block'; bossName.textContent = b.name;
     playSound(80, 1, 'sawtooth', 0.2);
 }
@@ -180,7 +269,16 @@ function spawnPowerup(x, y, type) {
 function togglePause() {
     paused =!paused;
     document.getElementById('pauseBtn').textContent = paused? '▶️' : '⏸️';
-    if(!paused &&!isGameOver) animate();
+    if(paused) {
+        pauseScore.textContent = fakeScore? realScore : score;
+        pauseHigh.textContent = highScore;
+        pauseCoins.textContent = coins;
+        pauseOverlay.style.display = 'flex';
+        cancelAnimationFrame(animationId);
+    } else {
+        pauseOverlay.style.display = 'none';
+        if(!isGameOver) animate();
+    }
 }
 
 function watchAd() {
@@ -191,11 +289,50 @@ function watchAd() {
     animate();
 }
 
+function drawShip(x, y, size, h, type) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.shadowBlur = 25; ctx.shadowColor = player.color; ctx.fillStyle = player.color;
+    ctx.beginPath();
+    if(type === 0) {
+        ctx.moveTo(0, -h/2);
+        ctx.lineTo(size/1.6, h/4);
+        ctx.lineTo(size/1.8, h/2.2);
+        ctx.lineTo(size/6, h/1.6);
+        ctx.lineTo(0, h/2);
+        ctx.lineTo(-size/6, h/1.6);
+        ctx.lineTo(-size/1.8, h/2.2);
+        ctx.lineTo(-size/1.6, h/4);
+    } else if(type === 1) {
+        ctx.moveTo(0, -h/2);
+        ctx.lineTo(size/2, 0);
+        ctx.lineTo(0, h/2);
+        ctx.lineTo(-size/2, 0);
+    } else if(type === 2) {
+        ctx.moveTo(0, -h/2);
+        ctx.lineTo(size/2, h/4);
+        ctx.lineTo(size/4, h/2);
+        ctx.lineTo(-size/4, h/2);
+        ctx.lineTo(-size/2, h/4);
+    } else {
+        ctx.moveTo(0, -h/2);
+        ctx.lineTo(size/2, h/2);
+        ctx.lineTo(-size/2, h/2);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#001122';
+    ctx.beginPath();
+    ctx.arc(0, -h/4, size/10, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+}
+
 function animate() {
     if (isGameOver || paused) return;
     animationId = requestAnimationFrame(animate);
 
-    const timeScale = slowMo > 0? 0.3 : 1;
+    const timeScale = slowMo > 0? 0.6 : 1;
     if(slowMo > 0) slowMo--;
 
     ctx.save();
@@ -215,33 +352,39 @@ function animate() {
     });
 
     player.x += (player.targetX - player.x) * 0.2;
-    if(player.x < player.size) player.x = player.size;
-    if(player.x > width - player.size) player.x = width - player.size;
+    if(player.x < player.size/2) player.x = player.size/2;
+    if(player.x > width - player.size/2) player.x = width - player.size/2;
     if(player.invincible > 0) player.invincible--;
 
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    if(player.invincible > 0 && Math.floor(frameCount/5) % 2 === 0) ctx.globalAlpha = 0.3;
-    if(shield > 0) {
+    if(shieldTimeMs > 0) {
+        shieldTimeMs -= 16.67 * timeScale;
+        shieldTime.textContent = (shieldTimeMs/1000).toFixed(1);
+        shieldTimer.style.display = 'block';
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        if(player.invincible > 0 && Math.floor(frameCount/5) % 2 === 0) ctx.globalAlpha = 0.3;
         ctx.shadowBlur = 40; ctx.shadowColor = '#00ff00';
         ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 5;
-        ctx.beginPath(); ctx.arc(0, 0, player.size+15, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, player.size/2+15, 0, Math.PI*2); ctx.stroke();
+        if(shieldTimeMs < 500 && Math.floor(frameCount/3) % 2 === 0) ctx.globalAlpha = 0.3;
+        ctx.restore();
+        if(shieldTimeMs <= 0) {
+            shieldTimeMs = 0;
+            shieldTimer.style.display = 'none';
+        }
     }
-    ctx.shadowBlur = 25; ctx.shadowColor = player.color; ctx.fillStyle = player.color;
-    ctx.beginPath();
-    ctx.moveTo(0, -player.height); ctx.lineTo(player.size/2, player.height/2);
-    ctx.lineTo(0, player.height/3); ctx.lineTo(-player.size/2, player.height/2);
-    ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.restore();
+
+    if(player.invincible > 0 && Math.floor(frameCount/5) % 2 === 0) ctx.globalAlpha = 0.3;
+    drawShip(player.x, player.y, player.size, player.height, player.type);
+    ctx.globalAlpha = 1.0;
 
     if (frameCount % FIRE_RATE === 0) {
         const colors = ['#00f0ff', '#ff00ff', '#ffff00', '#00ff00', '#ff0055', '#ffffff', '#ff8800'];
-        for(let i = 0; i < BULLET_COUNT; i++) {
-            const offset = (i - Math.floor(BULLET_COUNT/2)) * BULLET_SPREAD;
-            bullets.push({x: player.x+offset, y: player.y-player.height, color: colors[i % colors.length], dmg: 1});
+        for(let i = 0; i < selectedBulletCount; i++) {
+            const offset = (i - Math.floor(selectedBulletCount/2)) * BULLET_SPREAD;
+            bullets.push({x: player.x+offset, y: player.y-player.height/2, color: colors[i % colors.length], dmg: 1});
         }
-        playSound(weaponLevel >= 2? 1000 : 800, 0.05, 'square');
+        playSound(800, 0.05, 'square');
     }
 
     for(let i = bullets.length-1; i >= 0; i--) {
@@ -256,12 +399,17 @@ function animate() {
         if(boss.x < boss.size || boss.x > width-boss.size) boss.dir *= -1;
         boss.fireRate++;
 
-        if(boss.fireRate % 40 === 0) {
-            for(let i = 0; i < 3; i++) {
-                const angle = (i-1) * 0.3;
-                enemyBullets.push({x: boss.x, y: boss.y+boss.size/2, vx: Math.sin(angle)*5, vy: 8, color: '#ff0000'});
+        if(boss.fireRate % boss.fireCD === 0) {
+            for(let i = 0; i < boss.bulletCount; i++) {
+                const angle = (i - (boss.bulletCount-1)/2) * 0.06;
+                enemyBullets.push({
+                    x: boss.x, y: boss.y+boss.size/2,
+                    vx: Math.sin(angle)*3, vy: 6,
+                    color: '#ffaa00',
+                    trail: []
+                });
             }
-            playSound(200, 0.1, 'sawtooth');
+            playSound(150, 0.15, 'sawtooth');
         }
 
         ctx.shadowBlur = 40; ctx.shadowColor = boss.color;
@@ -279,9 +427,11 @@ function animate() {
                     createExplosion(boss.x, boss.y, boss.color, true);
                     bossActive = false; boss = null;
                     bossHpBar.style.display = 'none'; bossName.style.display = 'none';
-                    score += 1000; coins += 50; coinsEl.textContent = coins;
-                    localStorage.setItem('neonCoins', coins);
-                    scoreEl.textContent = score;
+                    if(!fakeScore) {
+                        score += 1000;
+                        scoreEl.textContent = score;
+                    }
+                    coins += 50; coinsEl.textContent = coins;
                     playSound(40, 1.5, 'sawtooth', 0.3);
                     slowMo = 60;
                 }
@@ -292,13 +442,29 @@ function animate() {
     for(let i = enemyBullets.length-1; i >= 0; i--) {
         const b = enemyBullets[i];
         b.x += b.vx * timeScale; b.y += b.vy * timeScale;
-        ctx.shadowBlur = 10; ctx.shadowColor = b.color;
-        ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI*2); ctx.fill();
 
-        if(player.invincible === 0 && Math.abs(player.x-b.x) < player.size && Math.abs(player.y-b.y) < 40) {
+        b.trail.push({x: b.x, y: b.y});
+        if(b.trail.length > 8) b.trail.shift();
+
+        ctx.shadowBlur = 20; ctx.shadowColor = b.color;
+        for(let t = 0; t < b.trail.length; t++) {
+            const tr = b.trail[t];
+            ctx.globalAlpha = t / b.trail.length * 0.5;
+            ctx.fillStyle = b.color;
+            ctx.beginPath(); ctx.arc(tr.x, tr.y, 4, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+
+        ctx.shadowBlur = 25; ctx.shadowColor = b.color;
+        ctx.fillStyle = b.color;
+        ctx.beginPath(); ctx.arc(b.x, b.y, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, Math.PI*2); ctx.fill();
+
+        if(player.invincible === 0 && Math.abs(player.x-b.x) < player.size/2 && Math.abs(player.y-b.y) < player.height/2) {
             enemyBullets.splice(i, 1);
-            if(shield > 0) {
-                shield--; shieldEl.textContent = shield;
+            if(shieldTimeMs > 0) {
+                shieldTimeMs = 0; shieldTimer.style.display = 'none';
                 createExplosion(player.x, player.y, '#00ff00');
             } else {
                 lives--; livesEl.textContent = lives; combo = 0; comboUi.style.display = 'none';
@@ -311,8 +477,7 @@ function animate() {
     }
 
     if (frameCount % 20 === 0) spawnObstacle();
-    if (score >= 2000 &&!bossActive && frameCount % 1000 === 0) spawnBoss();
-    if (score >= 5000 &&!bossActive && frameCount % 1500 === 0) spawnBoss();
+    if (score >= 1500 &&!bossActive && frameCount % 2000 === 0) spawnBoss();
 
     for(let i = obstacles.length-1; i >= 0; i--) {
         const o = obstacles[i]; o.y += o.speed * timeScale;
@@ -333,29 +498,33 @@ function animate() {
                     createExplosion(o.x+o.size/2, o.y+o.size/2, o.color);
                     if(o.type === 'shield') spawnPowerup(o.x+o.size/2, o.y+o.size/2, 'shield');
                     else if(o.type === 'weapon') spawnPowerup(o.x+o.size/2, o.y+o.size/2, 'weapon');
-                    else if(o.type === 'coin') { coins += 5; coinsEl.textContent = coins; localStorage.setItem('neonCoins', coins); }
+                    else if(o.type === 'coin') {
+                        coins += 10; coinsEl.textContent = coins;
+                    }
                     else if(Math.random() > 0.95) spawnPowerup(o.x+o.size/2, o.y+o.size/2, 'slowmo');
                     obstacles.splice(i, 1);
-                    score += 10; combo++;
-                    if(combo > maxCombo) maxCombo = combo;
-                    if(combo > 10) {
-                        comboUi.style.display = 'block';
-                        comboNum.textContent = Math.floor(combo/10);
-                        score += Math.floor(combo/10) * 2;
+                    if(!fakeScore) {
+                        score += 10; combo++;
+                        if(combo > maxCombo) maxCombo = combo;
+                        if(combo > 10) {
+                            comboUi.style.display = 'block';
+                            comboNum.textContent = Math.floor(combo/10);
+                            score += Math.floor(combo/10) * 2;
+                        }
+                        scoreEl.textContent = score;
                     }
+                    if(score % 400 === 0) gameSpeed += 0.8;
+                    if(bossActive) gameSpeed = 8;
                 }
-                scoreEl.textContent = score;
-                if(score % 400 === 0) gameSpeed += 0.8;
-                if(bossActive) gameSpeed = 8;
                 break;
             }
         }
 
         const dx = Math.abs(player.x - (o.x+o.size/2));
         const dy = Math.abs(player.y - (o.y+o.size/2));
-        if(player.invincible === 0 && dx < player.size && dy < 40) {
-            if(shield > 0) {
-                shield--; shieldEl.textContent = shield;
+        if(player.invincible === 0 && dx < player.size/2 && dy < player.height/2) {
+            if(shieldTimeMs > 0) {
+                shieldTimeMs = 0; shieldTimer.style.display = 'none';
                 createExplosion(player.x, player.y, '#00ff00');
                 obstacles.splice(i, 1);
             } else {
@@ -380,8 +549,11 @@ function animate() {
         ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
         ctx.restore();
 
-        if(Math.abs(player.x-p.x) < player.size && Math.abs(player.y-p.y) < 40) {
-            if(p.type === 'shield') { shield += 3; shieldEl.textContent = shield; }
+        if(Math.abs(player.x-p.x) < player.size/2 && Math.abs(player.y-p.y) < player.height/2) {
+            if(p.type === 'shield') {
+                shieldTimeMs = 1500;
+                shieldTimer.style.display = 'block';
+            }
             else if(p.type === 'weapon') {
                 weaponLevel = Math.min(weaponLevel + 1, 2);
                 updateWeaponUI();
@@ -415,22 +587,25 @@ function endGame() {
     isGameOver = true;
     cancelAnimationFrame(animationId);
     overlay.style.display = 'flex';
-    document.getElementById('finalScore').textContent = "Toplam Skor: " + score;
+    document.getElementById('finalScore').textContent = "Toplam Skor: " + (fakeScore? realScore : score);
     document.getElementById('finalCombo').textContent = "Max Kombo: x" + maxCombo;
     document.getElementById('finalCoins').textContent = "Coin: " + coins;
 
-    if(score > highScore) {
-        highScore = score;
-        localStorage.setItem('neonV6', highScore);
+    let finalScoreCheck = fakeScore? realScore : score;
+    if(finalScoreCheck > highScore) {
+        highScore = finalScoreCheck;
+        localStorage.setItem('neonV7', highScore);
         highEl.textContent = highScore;
     }
-    localStorage.setItem('neonCoins', coins);
 }
 
-function resetGame() { init(); }
+function resetGame() {
+    pauseOverlay.style.display = 'none';
+    init();
+}
 
 function shareScore() {
-    const text = `Neon Striker V6'da ${score} skor yaptım! Max Kombo: x${maxCombo} | Coin: ${coins} 🔥`;
+    const text = `Neon Striker: Hata Affetmez'de ${fakeScore? realScore : score} skor yaptım! Max Kombo: x${maxCombo} | Coin: ${coins} 🔥 Tek canla geçebilen var mı?`;
     if(navigator.share) navigator.share({text});
     else navigator.clipboard.writeText(text).then(() => alert('Skor kopyalandı!'));
 }
@@ -438,10 +613,12 @@ function shareScore() {
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(init, 250);
+    resizeTimeout = setTimeout(() => {
+        if(!paused &&!isGameOver) init();
+    }, 250);
 });
 
-init();
+menuHigh.textContent = highScore;
 </script>
 </body>
-  </html>
+</html>
