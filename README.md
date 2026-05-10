@@ -1,5 +1,3 @@
-# https://acaralc.github.io/neon-striker-tempest.github.io/
-
 # Neon Striker V8.4 TEMPEST 🎮
 
 Android için neon tarzı arcade oyun.
