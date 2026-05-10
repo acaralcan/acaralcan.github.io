@@ -106,5 +106,13 @@
 </script>
 <script data-goatcounter="https://acaralcan.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+<p>Toplam ziyaret: <span id="ziyaretci">...</span></p>
+<script>
+fetch('https://acaralcan.goatcounter.com/counter/' + encodeURIComponent(location.pathname) + '.json')
+  .then(r => r.json())
+  .then(data => {
+    if(data.count) document.getElementById('ziyaretci').innerText = data.count
+  })
+</script>
 </body>
 </html>
